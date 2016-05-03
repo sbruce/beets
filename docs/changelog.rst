@@ -23,6 +23,10 @@ New features:
 * :doc:`/plugins/export`: A new plugin to export the data from queries to a
   json format. Thanks to :user:`GuilhermeHideki`.
 * :doc:`/reference/pathformat`: new functions: %first{} and %ifdef{}
+* :doc:`/reference/config`: option ``terminal_encoding`` now works for some
+  inputs
+* New :doc:`/plugins/hook` that allows commands to be executed when an event is
+  emitted by beets. :bug:`1561` :bug:`1603`
 
 .. _fanart.tv: https://fanart.tv/
 
@@ -43,6 +47,8 @@ Fixes:
   command can't be invoked. :bug:`1927`
 * :doc:`/plugins/fetchart`: Fix a crash in the Wikipedia backend on non-ASCII
   artist and album names. :bug:`1960`
+* :doc:`/plugins/convert`: Change default `ogg` encoding quality from 2 to 3
+  (to fit the default from the `oggenc(1)` manpage). :bug:`1982`
 
 
 1.3.17 (February 7, 2016)
