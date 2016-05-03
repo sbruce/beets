@@ -18,7 +18,7 @@ from __future__ import division, absolute_import, print_function
 import os
 
 import beets.library
-from beets.util import confit
+import confuse
 
 __version__ = u'1.3.18'
 __author__ = u'Adrian Sampson <adrian@radbox.org>'
@@ -26,7 +26,7 @@ __author__ = u'Adrian Sampson <adrian@radbox.org>'
 Library = beets.library.Library
 
 
-class IncludeLazyConfig(confit.LazyConfig):
+class IncludeLazyConfig(confuse.LazyConfig):
     """A version of Confit's LazyConfig that also merges in data from
     YAML files specified in an `include` setting.
     """
@@ -38,7 +38,7 @@ class IncludeLazyConfig(confit.LazyConfig):
                 filename = view.as_filename()
                 if os.path.isfile(filename):
                     self.set_file(filename)
-        except confit.NotFoundError:
+        except confuse.NotFoundError:
             pass
 
 
