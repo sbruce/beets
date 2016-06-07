@@ -145,7 +145,7 @@ class MobilePlugin(BeetsPlugin):
 
             #print "Copying file %s to %s" % (source_file, dest_file)
             #import pdb;pdb.set_trace()
-            copyfile(source_file, dest_file)
+            copyfile(os.path.realpath(source_file), os.path.realpath(dest_file))
 
 
 
