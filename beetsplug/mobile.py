@@ -77,12 +77,14 @@ class MobilePlugin(BeetsPlugin):
         existing_dirs = []
         for root, dirs, files in os.walk(self.directory):
             for d in dirs:
-                existing_dirs.append(join(root, d))
+                if not d.startswith('.'):
+                    existing_dirs.append(join(root, d))
 
 
         for root, dirs, files in os.walk(self.directory):
             for f in files:
-                existing_files.append(join(root, f))
+                if not f.startswith('.'):
+                    existing_files.append(join(root, f))
 
         print "existing files: %s" % existing_files
         print ""
