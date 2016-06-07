@@ -31,20 +31,20 @@ class MobilePlugin(BeetsPlugin):
         self.config.add({
             'query': u'mobile:1',
         })
-        
-        #item_types = {'tag': types.STRING}        
-        
+
+        #item_types = {'tag': types.STRING}
+
         if 'directory' in self.config:
             print 'Directory: %s' % self.config['directory'].get()
             self.directory = self.config['directory'].get()
         else:
             print "Please specify a director in the config"
             exit(-1)
-            
+
         self.query = self.config['query'].get()
         print 'query: %s' % self.query
-                        
-            
+
+
     def commands(self):
 
         cmd = ui.Subcommand('mobile', help=u'Sync music to the mobile folder')
@@ -67,8 +67,8 @@ class MobilePlugin(BeetsPlugin):
 #            help=u'path for the output file. If not given, will print the data'
 #        )
         return [cmd]
-        
-        
+
+
     def run(self, lib, suboptions, subargs):
         query_result = lib.items(self.query)
         # Walk our directory
@@ -77,9 +77,9 @@ class MobilePlugin(BeetsPlugin):
         existing_dirs = []
         for root, dirs, files in os.walk(self.directory):
             for d in dirs:
-                existing_dirs.append(join(root, d))                
-                
-                    
+                existing_dirs.append(join(root, d))
+
+
         for root, dirs, files in os.walk(self.directory):
             for f in files:
                 existing_files.append(join(root, f))
@@ -87,22 +87,22 @@ class MobilePlugin(BeetsPlugin):
         print "existing files: %s" % existing_files
         print ""
         print "Existing dirs: %s" % existing_dirs
-        
+
         # Build a list of files to remove
         mobile_songs = []
         for item in query_result:
             relative_path = item.destination(fragment=True)
             dest_file = join(self.directory, relative_path)
             mobile_songs.append(dest_file)
-            
-            
+
+
 #        print "Mobile_songs: %s" % mobile_songs
         songs_to_delete = []
-        
+
         for f in existing_files:
             if f not in mobile_songs:
                 songs_to_delete.append(f)
-                
+
         print "Songs to delete: %s" % songs_to_delete
 
         # Delete the songs
@@ -114,12 +114,12 @@ class MobilePlugin(BeetsPlugin):
         existing_dirs.reverse()
         for d in existing_dirs:
             try:
-                print "Trying to remove directory: %s" % d.encode('mbcs')
-                os.rmdir(d.encode('mbcs'))
+                print "Trying to remove directory: %s" % d
+                os.rmdir(d)
             except OSError as exc:
                 pass
-            
-        
+
+
         # Copy files to the mobile directory
         for item in query_result:
             # Getting unicode errors so I need to do this:
@@ -128,23 +128,23 @@ class MobilePlugin(BeetsPlugin):
             source_file = join(base_dir, item.destination(fragment=True))
             relative_path = item.destination(fragment=True)
             dest_file = join(self.directory, relative_path)
-            
+
             # Make the directory
             #import pdb;pdb.set_trace()
-            print "Making directory: %s" % os.path.dirname(dest_file.encode('mbcs'))
+            print "Making directory: %s" % os.path.dirname(dest_file)
             try:
-                os.makedirs(os.path.dirname(dest_file.encode('mbcs')))
+                os.makedirs(os.path.dirname(dest_file))
             except OSError as exc:
                 if exc.errno == os.errno.EEXIST and os.path.isdir(os.path.dirname(dest_file)):
                     pass
                 else:
                     raise
-            
-            
+
+
             #print "Copying file %s to %s" % (source_file, dest_file)
             #import pdb;pdb.set_trace()
             copyfile(source_file, dest_file)
-            
-           
 
-            
+
+
+
