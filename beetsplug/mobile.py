@@ -72,22 +72,68 @@ class MobilePlugin(BeetsPlugin):
     def run(self, lib, suboptions, subargs):
         query_result = lib.items(self.query)
         # Walk our directory
-        print "Checking the directory"
-#        for root, dirs, files in os.walk(self.directory):
-#            import pdb;pdb.set_trace()
-#            for f in files:
-#                print "file: ", f     
+        # Build an array of all files
+        existing_files = []
+        existing_dirs = []
+        for root, dirs, files in os.walk(self.directory):
+            for d in dirs:
+                existing_dirs.append(join(root, d))                
+                
+                    
+        for root, dirs, files in os.walk(self.directory):
+            for f in files:
+                existing_files.append(join(root, f))
 
+        print "existing files: %s" % existing_files
+        print ""
+        print "Existing dirs: %s" % existing_dirs
+        
+        # Build a list of files to remove
+        mobile_songs = []
+        for item in query_result:
+            relative_path = item.destination(fragment=True)
+            dest_file = join(self.directory, relative_path)
+            mobile_songs.append(dest_file)
+            
+            
+#        print "Mobile_songs: %s" % mobile_songs
+        songs_to_delete = []
+        
+        for f in existing_files:
+            if f not in mobile_songs:
+                songs_to_delete.append(f)
+                
+        print "Songs to delete: %s" % songs_to_delete
+
+        # Delete the songs
+        for f in songs_to_delete:
+            print "Delete file: %s" % f.encode('utf-8')
+            os.remove(f)
+
+        # Delete any empty directories
+        existing_dirs.reverse()
+        for d in existing_dirs:
+            try:
+                print "Trying to remove directory: %s" % d.encode('mbcs')
+                os.rmdir(d.encode('mbcs'))
+            except OSError as exc:
+                pass
+            
+        
         # Copy files to the mobile directory
         for item in query_result:
-            source_file = item.destination()
+            # Getting unicode errors so I need to do this:
+            # Get the base dir of the main library
+            base_dir = config['directory'].get()
+            source_file = join(base_dir, item.destination(fragment=True))
             relative_path = item.destination(fragment=True)
             dest_file = join(self.directory, relative_path)
             
             # Make the directory
-            print "Making directory: %s" % os.path.dirname(dest_file)
+            #import pdb;pdb.set_trace()
+            print "Making directory: %s" % os.path.dirname(dest_file.encode('mbcs'))
             try:
-                os.makedirs(os.path.dirname(dest_file))
+                os.makedirs(os.path.dirname(dest_file.encode('mbcs')))
             except OSError as exc:
                 if exc.errno == os.errno.EEXIST and os.path.isdir(os.path.dirname(dest_file)):
                     pass
@@ -95,7 +141,8 @@ class MobilePlugin(BeetsPlugin):
                     raise
             
             
-            print "Copying file %s to %s" % (source_file, dest_file)
+            #print "Copying file %s to %s" % (source_file, dest_file)
+            #import pdb;pdb.set_trace()
             copyfile(source_file, dest_file)
             
            
